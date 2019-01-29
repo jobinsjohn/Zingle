@@ -2,22 +2,24 @@
 
 Zingle – An alert will display underneath your UINavigationBar 🎅
 
+💥 **Note:** Zingle has a dependency to have a `UINavigationController` in your app, which means it will not work/display in your app if you don't have a `UINavigationController` linked to a `UIViewController` in which you're planning to show an alert. However, it will get display even if the `UINavigationBar` is hidden for a particular `UIViewController`.
+
 [![Build Status](https://travis-ci.org/hemangshah/Zingle.svg?branch=master)](https://travis-ci.org/hemangshah/Zingle)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)
 ![Platform](https://img.shields.io/badge/Platforms-iOS-red.svg)
 ![Swift 4.x](https://img.shields.io/badge/Swift-4.x-blue.svg)
 ![CocoaPods](https://img.shields.io/cocoapods/dt/Zingle.svg)
 ![MadeWithLove](https://img.shields.io/badge/Made%20with%20%E2%9D%A4-India-green.svg)
-[![Blog](https://img.shields.io/badge/Blog-iKiwiTech.com-blue.svg)](http://www.ikiwitech.com)
 [![Awesome-Swift](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/matteocrippa/awesome-swift/)
 
 1. [Screenshots](#screenshots)
 2. [Features](#features)
 3. [Installation](#installation)
 4. [Setup](#setup)
-5. [Credits](#credits)
-6. [Thanks](#thank-you)
-7. [License](#license)
+5. [Usage](#usage)
+6. [Credits](#credits)
+7. [Thanks](#thank-you)
+8. [License](#license)
 
 ## Screenshots
 
@@ -32,7 +34,7 @@ Zingle – An alert will display underneath your UINavigationBar 🎅
 
 1. Easy to setup & Use
 2. Dynamic Property Configurations.
-3. Lightweight with zero dependancies.
+3. Lightweight with zero dependencies.
 
 ## Installation
 
@@ -43,7 +45,13 @@ Zingle – An alert will display underneath your UINavigationBar 🎅
 
 ## Setup
 
+````swift
+import Zingle
 ````
+
+## Usage
+
+````swift
 Zingle.init(duration: 0.5, delay: 3)
   .message(message: "No Internet Connection.")
   .messageIcon(icon: #imageLiteral(resourceName: "warning-icon"))
@@ -55,18 +63,23 @@ Zingle.init(duration: 0.5, delay: 3)
 
 You can also use it with in-built extension to `UIViewController`.
 
-````
+````swift
 //Create ZingleConfig.
 let config = ZingleConfig()
 config.delay = 2.0
 config.duration = 1.0
-config.message = "No Internet Connection!"
 config.messageColor = UIColor.white
-config.messageFont = UIFont.init(name: "Verdana-Bold", size: 15.0) ?? UIFont.boldSystemFont(ofSize: 15.0)
+config.messageFont = UIFont.init(name: "AmericanTypewriter", size: 15.0)!
 config.backgroundColor = UIColor.purple.withAlphaComponent(0.5)
         
-//Show Zingle with `self` (UIViewController).
-self.zingle(withConfig: config)
+//Show Zingle with `self` (UIViewController) with custom configuration.
+self.zingle(message: "No Internet Connection.", withConfig: config)
+
+//or
+
+//Show Zingle with `self` (UIViewController) with default configuration.
+self.zingle(message: "No Internet Connection.")
+
 ````
 You can [watch](https://github.com/hemangshah/Zingle/subscription) to <b>Zingle</b> to see continuous updates. Stay tuned.
 

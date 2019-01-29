@@ -9,12 +9,17 @@
 import UIKit
 
 public class ZingleConfig {
+    ///Set delay to hide Zingle. Default: 2.0.
     public var delay: TimeInterval = 2.0
+    ///Set duration of Zingle visible animation. Default: 0.3.
     public var duration: TimeInterval = 0.3
+    ///Set Zingle message color. Default: white.
     public var messageColor: UIColor = UIColor.white
+    ///Set Zingle message font. Default: UIFont.systemFont(ofSize: 15).
     public var messageFont: UIFont = UIFont.systemFont(ofSize: 15)
-    public var message: String! = "No message has been set."
+    ///Set Zingle message icon. Default: Empty UIImage.
     public var messageIcon: UIImage! = UIImage.init()
+    ///Set Zingle background color. Default: red.
     public var backgroundColor: UIColor = UIColor.red
 }
 
@@ -41,7 +46,22 @@ public class Zingle: UIView {
         return 0.0
     }
     
-    public init(duration: TimeInterval = 0.3, delay: TimeInterval = 2) {
+    fileprivate var unhideYPositionForZingle: CGFloat {
+        get {
+            let yPos = self.yPosForZingal
+            return yPos
+        }
+    }
+    
+    fileprivate var hiddenYPositionForZingle: CGFloat {
+        get {
+            let yPos = self.yPosForZingal - heightForZingal
+            return yPos
+        }
+    }
+
+    ///Init Zingle with Duration and Delay. Default Duration (0.3) Delay (2.0)
+    public init(duration: TimeInterval = 0.3, delay: TimeInterval = 2.0) {
         
         self.completion = nil
         self.delay = delay
@@ -59,10 +79,23 @@ public class Zingle: UIView {
 
 //MARK: UIViewController Extension
 public extension UIViewController {
-    public func zingle(withConfig config: ZingleConfig) {
+    ///Show Zingle with config.
+    public func zingle(message: String!, withConfig config: ZingleConfig!) {
         Zingle(duration: config.duration, delay: config.delay)
             .backgroundColor(color: config.backgroundColor)
-            .message(message: config.message)
+            .message(message: message)
+            .messageIcon(icon: config.messageIcon)
+            .messageColor(color: config.messageColor)
+            .messageFont(font: config.messageFont)
+            .show()
+    }
+    
+    ///Show Zingle with default config.
+    public func zingle(message: String!) {
+        let config = ZingleConfig()
+        Zingle(duration: config.duration, delay: config.delay)
+            .backgroundColor(color: config.backgroundColor)
+            .message(message: message)
             .messageIcon(icon: config.messageIcon)
             .messageColor(color: config.messageColor)
             .messageFont(font: config.messageFont)
@@ -79,7 +112,7 @@ extension Zingle {
 
     fileprivate func setupView() {
         self.backgroundColor = UIColor.backgroundColor
-        self.frame = CGRect(x: 0, y: self.yPosForZingal, width: UIScreen.main.bounds.width, height: 0.0)
+        self.frame = CGRect(x: 0, y: self.hiddenYPositionForZingle, width: UIScreen.main.bounds.width, height: heightForZingal)
     }
     
     fileprivate func setupMessageButton() {
@@ -98,40 +131,47 @@ extension Zingle {
 // MARK: chaning function and show / hide functions
 public extension Zingle {
     
-    public func message(message: String) -> Self {
+    ///Set Zingle message to display.
+    public func message(message: String!) -> Self {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.duration/4.0) {
             self.messageButton.setTitle(message, for: .normal)
         }
         return self
     }
     
-    public func messageIcon(icon: UIImage) -> Self {
+    ///Set Zingle message icon.
+    public func messageIcon(icon: UIImage!) -> Self {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.duration/1.5) {
             self.messageButton.setImage(icon, for: .normal)
         }
         return self
     }
     
-    public func messageColor(color: UIColor) -> Self {
+    ///Set Zingle message color.
+    public func messageColor(color: UIColor!) -> Self {
         self.messageButton.setTitleColor(color, for: .normal)
         return self
     }
     
-    public func backgroundColor(color: UIColor) -> Self {
+    ///Set Zingle background color.
+    public func backgroundColor(color: UIColor!) -> Self {
         self.messageButton.backgroundColor = color
         return self
     }
     
-    public func messageFont(font: UIFont) -> Self {
+    ///Set Zingle message font.
+    public func messageFont(font: UIFont!) -> Self {
         self.messageButton.titleLabel?.font = font
         return self
     }
     
+    ///Handle Zinlge completion.
     public func completion(_ completion: @escaping () -> Void) -> Self {
         self.completion = completion
         return self
     }
     
+    ///Show Zingle.
     public func show() {
         self.adjustView()
         
@@ -151,11 +191,12 @@ extension Zingle {
         guard !self.isZingleShowing else {
             return
         }
+        
         self.isZingleShowing = true
+        self.alpha = 1.0
         
         UIView.animate(withDuration: duration, animations: {
-            self.frame.size.height = self.heightForZingal
-            self.messageButton.frame.size.height = self.frame.size.height
+            self.frame.origin.y = self.unhideYPositionForZingle
             self.layoutIfNeeded()
         }) { _ in
             completion()
@@ -164,8 +205,8 @@ extension Zingle {
     
     fileprivate func finishAnimating() {
         UIView.animate(withDuration: duration, animations: {
-            self.frame.size.height = 0.0
-            self.messageButton.frame.size.height = self.frame.size.height
+            self.frame.origin.y = self.hiddenYPositionForZingle
+            self.alpha = 0.0
             self.layoutIfNeeded()
         }) { _ in
             self.isZingleShowing = false
